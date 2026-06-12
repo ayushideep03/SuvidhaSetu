@@ -123,7 +123,7 @@ export default async function SchemePage({ params }: Props) {
       )}
 
       {/* Documents */}
-      <DocumentChecklist schemeName={scheme.scheme_name} documentsMd={scheme.documents_required_md || undefined} />
+      <DocumentChecklist schemeSlug={scheme.slug} schemeName={scheme.scheme_name} documentsMd={scheme.documents_required_md || undefined} />
 
       {/* Application process */}
       <Section title="How to Apply" hindiTitle="आवेदन कैसे करें" icon={CheckCircle2}>

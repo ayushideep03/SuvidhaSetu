@@ -1,13 +1,43 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FileText, Download, Share2, Copy, Check } from "lucide-react";
 import { cleanText } from "@/lib/text";
 
-export function DocumentChecklist({ schemeName, documentsMd }: { schemeName: string; documentsMd?: string }) {
+export function DocumentChecklist({ schemeSlug, schemeName, documentsMd }: { schemeSlug: string; schemeName: string; documentsMd?: string }) {
   const [copiedSms, setCopiedSms] = useState(false);
   const [copiedWa, setCopiedWa] = useState(false);
   const [checkedItems, setCheckedItems] = useState<Record<number, boolean>>({});
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  // Load from localStorage on mount
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem('suvidhasetu-checklists');
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (parsed[schemeSlug]) {
+          setCheckedItems(parsed[schemeSlug]);
+        }
+      }
+    } catch (e) {
+      console.error("Failed to load checklist state", e);
+    }
+    setIsLoaded(true);
+  }, [schemeSlug]);
+
+  // Save to localStorage when changed
+  useEffect(() => {
+    if (!isLoaded) return;
+    try {
+      const stored = localStorage.getItem('suvidhasetu-checklists');
+      const parsed = stored ? JSON.parse(stored) : {};
+      parsed[schemeSlug] = checkedItems;
+      localStorage.setItem('suvidhasetu-checklists', JSON.stringify(parsed));
+    } catch (e) {
+      console.error("Failed to save checklist state", e);
+    }
+  }, [checkedItems, schemeSlug, isLoaded]);
 
   if (!documentsMd || documentsMd.trim() === "") {
     return (
@@ -24,11 +54,42 @@ export function DocumentChecklist({ schemeName, documentsMd }: { schemeName: str
     );
   }
 
-  // Parse documents markdown into an array of items
-  const lines = cleanText(documentsMd).split("\n").filter(l => l.trim() !== "");
-  const checklistItems = lines
-    .map(l => l.replace(/^[-*#]+\s*/, "").trim())
-    .filter(l => l.length > 3);
+  function parseDocuments(text: string): string[] {
+    let cleaned = text.replace(/\r/g, '').trim();
+    if (!cleaned) return [];
+    
+    if (cleaned.includes(';')) {
+      const items = cleaned.split(';')
+        .map(i => i.trim().replace(/^[-*#\d.]+\s*/, ""))
+        .filter(i => i.length > 2);
+      if (items.length > 1) return items;
+    }
+    
+    if (cleaned.includes('\n')) {
+      const items = cleaned.split('\n')
+        .map(i => i.trim().replace(/^[-*#\d.]+\s*/, ""))
+        .filter(i => i.length > 2);
+      if (items.length > 1) return items;
+    }
+
+    if (/\d\.\s/.test(cleaned)) {
+      const items = cleaned.split(/(?:\s+|^)\d+\.\s+/)
+        .map(i => i.trim().replace(/^[-*#]+\s*/, ""))
+        .filter(i => i.length > 2);
+      if (items.length > 1) return items;
+    }
+    
+    if (/[•|·|-]/.test(cleaned)) {
+      const items = cleaned.split(/(?:\s+|^)[•|·|-]\s+/)
+        .map(i => i.trim())
+        .filter(i => i.length > 2);
+      if (items.length > 1) return items;
+    }
+    
+    return [cleaned];
+  }
+
+  const checklistItems = parseDocuments(cleanText(documentsMd));
 
   const smsText = `Eligible Scheme: ${schemeName}
 Documents Needed:

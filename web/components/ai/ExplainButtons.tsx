@@ -22,9 +22,24 @@ export function ExplainButtons({ scheme }: { scheme: any }) {
         body: JSON.stringify({ scheme, intent }),
       });
       const data = await res.json();
-      setResult(data.result || data.error);
+      const answer = data.result || data.error || data.detail || "I do not have enough information to answer that question from the available scheme data.";
+      setResult(answer);
+      
+      // Scroll to answer
+      setTimeout(() => {
+        const headingEl = document.getElementById(`${displayTab}-answer`);
+        const containerEl = document.getElementById(`${displayTab}-answer-container`);
+        const el = headingEl || containerEl;
+        
+        if (el) {
+          el.scrollIntoView({ behavior: "smooth", block: "start" });
+          el.classList.add("bg-purple-200", "transition-colors", "duration-1000");
+          setTimeout(() => el.classList.remove("bg-purple-200", "transition-colors", "duration-1000"), 2000);
+        }
+      }, 200);
     } catch (e) {
-      setResult("Failed to fetch explanation.");
+      console.error("Explanation API Error:", e);
+      setResult("AI assistance is temporarily unavailable. Please try again.");
     }
     setLoading(false);
   }
@@ -46,9 +61,16 @@ export function ExplainButtons({ scheme }: { scheme: any }) {
         body: JSON.stringify({ scheme, message: userMsg }),
       });
       const data = await res.json();
-      setChatLog((prev) => [...prev, { role: "ai", text: data.result || data.error }]);
+      const answerText = data.result || data.error || data.detail || "Unable to contact Saarthi. Please try again.";
+      setChatLog((prev) => [...prev, { role: "ai", text: answerText }]);
+      
+      setTimeout(() => {
+        const el = document.getElementById("chat-answer-bottom");
+        if (el) el.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      }, 200);
     } catch (e) {
-      setChatLog((prev) => [...prev, { role: "ai", text: "Failed to fetch response." }]);
+      console.error("Chat API Error:", e);
+      setChatLog((prev) => [...prev, { role: "ai", text: "AI assistance is temporarily unavailable. Please try again." }]);
     }
     setLoading(false);
   }
@@ -99,8 +121,21 @@ export function ExplainButtons({ scheme }: { scheme: any }) {
       )}
 
       {(result && activeTab !== "chat") && (
-        <div className="p-6 prose prose-sm max-w-none text-neutral-700 bg-purple-50/50">
-          <ReactMarkdown>{result}</ReactMarkdown>
+        <div id={`${activeTab}-answer-container`} className="p-6 prose prose-sm max-w-none text-neutral-700 bg-purple-50/50 rounded-b-2xl border-t border-purple-100/50 transition-colors duration-500">
+          <ReactMarkdown
+            components={{
+              h3: ({ node, ...props }) => {
+                const text = String(props.children);
+                if (text.includes("What is this scheme")) return <h3 id="explain-answer" className="scroll-mt-20 p-2 rounded-md" {...props} />;
+                if (text.includes("Why you qualify")) return <h3 id="eligible-answer" className="scroll-mt-20 p-2 rounded-md" {...props} />;
+                if (text.includes("What documents you need")) return <h3 id="documents-answer" className="scroll-mt-20 p-2 rounded-md" {...props} />;
+                if (text.includes("What you should do next")) return <h3 id="next-answer" className="scroll-mt-20 p-2 rounded-md" {...props} />;
+                return <h3 {...props} />;
+              }
+            }}
+          >
+            {result}
+          </ReactMarkdown>
         </div>
       )}
 
@@ -137,6 +172,7 @@ export function ExplainButtons({ scheme }: { scheme: any }) {
                 </div>
               </div>
             )}
+            <div id="chat-answer-bottom" />
           </div>
           <form onSubmit={handleChat} className="flex gap-2">
             <input
