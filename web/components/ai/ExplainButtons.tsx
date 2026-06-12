@@ -1,20 +1,28 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Sparkles, FileText, CheckCircle2, UserCheck, MessageSquare, Loader2 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 
 export function ExplainButtons({ scheme }: { scheme: any }) {
   const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<string | null>(null);
+  const [generatedAnswers, setGeneratedAnswers] = useState<Record<string, string>>({});
+  const [highlightedId, setHighlightedId] = useState<string | null>(null);
+  const [chatActive, setChatActive] = useState(false);
   const [chatInput, setChatInput] = useState("");
   const [chatLog, setChatLog] = useState<{ role: "user" | "ai"; text: string }[]>([]);
+  
+  const answerRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
   async function handleExplain(intent: string, displayTab: string) {
+    if (generatedAnswers[displayTab]) {
+      answerRefs.current[displayTab]?.scrollIntoView({ behavior: "smooth", block: "start" });
+      setHighlightedId(displayTab);
+      setTimeout(() => setHighlightedId(null), 2000);
+      return;
+    }
+
     setLoading(true);
-    setResult(null);
-    setActiveTab(displayTab);
     try {
       const res = await fetch("/api/backend/api/explain", {
         method: "POST",
@@ -23,23 +31,16 @@ export function ExplainButtons({ scheme }: { scheme: any }) {
       });
       const data = await res.json();
       const answer = data.result || data.error || data.detail || "I do not have enough information to answer that question from the available scheme data.";
-      setResult(answer);
+      setGeneratedAnswers(prev => ({ ...prev, [displayTab]: answer }));
       
-      // Scroll to answer
       setTimeout(() => {
-        const headingEl = document.getElementById(`${displayTab}-answer`);
-        const containerEl = document.getElementById(`${displayTab}-answer-container`);
-        const el = headingEl || containerEl;
-        
-        if (el) {
-          el.scrollIntoView({ behavior: "smooth", block: "start" });
-          el.classList.add("bg-purple-200", "transition-colors", "duration-1000");
-          setTimeout(() => el.classList.remove("bg-purple-200", "transition-colors", "duration-1000"), 2000);
-        }
-      }, 200);
+        answerRefs.current[displayTab]?.scrollIntoView({ behavior: "smooth", block: "start" });
+        setHighlightedId(displayTab);
+        setTimeout(() => setHighlightedId(null), 2000);
+      }, 100);
     } catch (e) {
       console.error("Explanation API Error:", e);
-      setResult("AI assistance is temporarily unavailable. Please try again.");
+      setGeneratedAnswers(prev => ({ ...prev, [displayTab]: "AI assistance is temporarily unavailable. Please try again." }));
     }
     setLoading(false);
   }
@@ -52,14 +53,19 @@ export function ExplainButtons({ scheme }: { scheme: any }) {
     setChatLog((prev) => [...prev, { role: "user", text: userMsg }]);
     setChatInput("");
     setLoading(true);
-    setActiveTab("chat");
+    setChatActive(true);
 
     try {
+      console.log("FOLLOW-UP SUBMIT");
+      const payload = { scheme, message: userMsg, history: chatLog };
+      console.log("Payload:", payload);
+
       const res = await fetch("/api/backend/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ scheme, message: userMsg }),
+        body: JSON.stringify(payload),
       });
+      console.log(res.status);
       const data = await res.json();
       const answerText = data.result || data.error || data.detail || "Unable to contact Saarthi. Please try again.";
       setChatLog((prev) => [...prev, { role: "ai", text: answerText }]);
@@ -114,35 +120,26 @@ export function ExplainButtons({ scheme }: { scheme: any }) {
         </div>
       </div>
 
-      {(loading && activeTab !== "chat") && (
+      {loading && !chatActive && (
         <div className="p-6 flex items-center justify-center text-neutral-500">
           <Loader2 className="animate-spin mr-2" /> Saarthi is thinking...
         </div>
       )}
 
-      {(result && activeTab !== "chat") && (
-        <div id={`${activeTab}-answer-container`} className="p-6 prose prose-sm max-w-none text-neutral-700 bg-purple-50/50 rounded-b-2xl border-t border-purple-100/50 transition-colors duration-500">
-          <ReactMarkdown
-            components={{
-              h3: ({ node, ...props }) => {
-                const text = String(props.children);
-                if (text.includes("What is this scheme")) return <h3 id="explain-answer" className="scroll-mt-20 p-2 rounded-md" {...props} />;
-                if (text.includes("Why you qualify")) return <h3 id="eligible-answer" className="scroll-mt-20 p-2 rounded-md" {...props} />;
-                if (text.includes("What documents you need")) return <h3 id="documents-answer" className="scroll-mt-20 p-2 rounded-md" {...props} />;
-                if (text.includes("What you should do next")) return <h3 id="next-answer" className="scroll-mt-20 p-2 rounded-md" {...props} />;
-                return <h3 {...props} />;
-              }
-            }}
-          >
-            {result}
-          </ReactMarkdown>
+      {Object.entries(generatedAnswers).map(([tab, answer]) => (
+        <div 
+          key={tab}
+          ref={(el) => { answerRefs.current[tab] = el; }}
+          className={`p-6 prose prose-sm max-w-none text-neutral-700 rounded-b-2xl border-t transition-colors duration-1000 ${highlightedId === tab ? 'bg-purple-200 border-purple-300' : 'bg-purple-50/50 border-purple-100/50'}`}
+        >
+          <ReactMarkdown>{answer}</ReactMarkdown>
         </div>
-      )}
+      ))}
 
       <div className="border-t border-neutral-100 p-4 bg-white flex flex-col gap-3">
         <p className="text-xs text-neutral-500 italic px-1">Still have another question?</p>
         <button
-          onClick={() => { setActiveTab("chat"); setResult(null); }}
+          onClick={() => setChatActive(true)}
           className="self-start inline-flex items-center gap-2 bg-green-50 text-green-700 border border-green-200 text-sm font-semibold px-4 py-2 rounded-full hover:bg-green-100 transition-colors"
         >
           <MessageSquare size={16} />
@@ -150,7 +147,7 @@ export function ExplainButtons({ scheme }: { scheme: any }) {
         </button>
       </div>
 
-      {activeTab === "chat" && (
+      {chatActive && (
         <div className="p-6 bg-green-50/30 border-t border-neutral-100">
           <div className="space-y-4 mb-4 max-h-64 overflow-y-auto">
             {chatLog.length === 0 && (
@@ -165,7 +162,7 @@ export function ExplainButtons({ scheme }: { scheme: any }) {
                 </div>
               </div>
             ))}
-            {(loading && activeTab === "chat") && (
+            {(loading && chatActive) && (
               <div className="flex justify-start">
                 <div className="px-4 py-2 rounded-xl bg-white border border-neutral-200 text-neutral-500 text-sm shadow-sm flex items-center">
                   <Loader2 size={14} className="animate-spin mr-2" /> Saarthi is looking up details...

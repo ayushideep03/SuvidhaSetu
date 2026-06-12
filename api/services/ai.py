@@ -56,7 +56,24 @@ Scheme Data:
     response = explain_model.generate_content(prompt)
     return response.text
 
-def process_chat(scheme_data: dict, user_message: str) -> str:
-    msg = f"Context (Scheme Data):\n{json.dumps(scheme_data, indent=2)}\n\nUser Question: {user_message}"
-    response = chat_model.generate_content(msg)
-    return response.text
+def process_chat(scheme_data: dict, user_message: str, history: list = None) -> str:
+    if history is None:
+        history = []
+        
+    formatted_history = []
+    
+    # Translate frontend history format to Gemini format
+    for h in history:
+        role = 'user' if h['role'] == 'user' else 'model'
+        formatted_history.append({'role': role, 'parts': [h['text']]})
+        
+    try:
+        chat_session = chat_model.start_chat(history=formatted_history)
+        
+        # Grounding: Always prepend scheme context to the user's latest message
+        context_msg = f"Context (Scheme Data):\n{json.dumps(scheme_data, indent=2)}\n\nUser Question: {user_message}"
+        response = chat_session.send_message(context_msg)
+        return response.text
+    except Exception as e:
+        print(f"Gemini API Error in process_chat: {str(e)}")
+        raise e

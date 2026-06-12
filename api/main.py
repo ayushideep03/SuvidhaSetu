@@ -54,6 +54,7 @@ class ExplainRequest(BaseModel):
 class ChatRequest(BaseModel):
     scheme: Dict[str, Any]
     message: str
+    history: Optional[list] = []
 
 @app.post("/api/explain")
 def explain(request: ExplainRequest):
@@ -71,9 +72,11 @@ def explain(request: ExplainRequest):
 @app.post("/api/chat")
 def chat(request: ChatRequest):
     try:
-        result = ai.process_chat(request.scheme, request.message)
+        print(f"FOLLOW-UP REQUEST: {request.message}")
+        result = ai.process_chat(request.scheme, request.message, request.history)
         return {"result": result}
     except Exception as e:
+        print(f"FOLLOW-UP ERROR: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
 import os
