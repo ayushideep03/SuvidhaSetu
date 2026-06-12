@@ -1,0 +1,224 @@
+@import "tailwindcss";
+
+@theme {
+  /* Indian flag palette */
+  --color-saffron: #FF9933;
+  --color-saffron-light: #FFF3E4;
+  --color-saffron-dark: #C65A00;
+  --color-india-green: #138808;
+  --color-india-green-light: #EAF7EA;
+  --color-ashoka-blue: #1E3A8A;
+  --color-ashoka-blue-light: #EFF6FF;
+  --color-warm-50: #FAFBF7;
+  --color-warm-100: #F1F6EA;
+  --color-warm-200: #E3EED8;
+  --color-neutral-900: #1C1917;
+  --color-neutral-700: #44403C;
+  --color-neutral-500: #78716C;
+  --color-neutral-300: #D6D3D1;
+  --color-neutral-100: #F5F5F4;
+  --color-neutral-50: #FAFAF9;
+
+  /* Fonts */
+  --font-sans: 'Inter', sans-serif;
+  --font-devanagari: 'Noto Serif Devanagari', serif;
+
+  /* Radii */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.625rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.5rem;
+  --radius-full: 9999px;
+
+  /* Shadows */
+  --shadow-warm: 0 1px 3px rgba(19,136,8,0.12), 0 1px 2px rgba(0,0,0,0.06);
+  --shadow-card: 0 4px 16px rgba(0,0,0,0.08);
+  --shadow-card-hover: 0 8px 32px rgba(0,0,0,0.12);
+}
+
+:root {
+  --background: #FFFFFF;
+  --foreground: #1C1917;
+  --font-sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-devanagari: "Noto Serif Devanagari", "Nirmala UI", "Kohinoor Devanagari", serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  top: 0 !important;
+}
+
+body > .skiptranslate,
+.goog-te-banner-frame,
+.goog-te-gadget,
+.goog-logo-link {
+  display: none !important;
+}
+
+iframe.skiptranslate {
+  display: none !important;
+}
+
+.font-devanagari {
+  font-family: var(--font-devanagari);
+}
+
+/* Indian flag top stripe */
+.flag-stripe {
+  height: 4px;
+  background: linear-gradient(to right, #FF9933 33.33%, #FFFFFF 33.33%, #FFFFFF 66.66%, #138808 66.66%);
+}
+
+/* Ashoka Chakra SVG watermark */
+.ashoka-watermark {
+  opacity: 0.04;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Chip / pill button */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 1rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  min-height: 44px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  border: 2px solid #D6D3D1;
+  background: white;
+  color: #44403C;
+  user-select: none;
+}
+
+.chip:hover {
+  border-color: #138808;
+  background: #EAF7EA;
+  color: #0F6D06;
+}
+
+.chip.selected {
+  border-color: #138808;
+  background: #138808;
+  color: white;
+  font-weight: 600;
+}
+
+.chip.selected:hover {
+  background: #0F6D06;
+  border-color: #0F6D06;
+}
+
+/* Score badge */
+.badge-eligible {
+  background: #E8F5E9;
+  color: #138808;
+  border: 1px solid #A5D6A7;
+}
+
+.badge-likely {
+  background: #FFF8E1;
+  color: #F57F17;
+  border: 1px solid #FFE082;
+}
+
+.badge-possible {
+  background: #EFF6FF;
+  color: #1E3A8A;
+  border: 1px solid #BFDBFE;
+}
+
+/* Scheme card */
+.scheme-card {
+  border-left: 4px solid #138808;
+  background: white;
+  border-radius: 0.75rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  transition: border-color 0.2s ease, box-shadow 0.22s ease, transform 0.22s ease;
+  overflow: hidden;
+}
+
+.scheme-card:hover {
+  border-left-color: #FF9933;
+  box-shadow: 0 14px 38px rgba(19,136,8,0.13), 0 4px 12px rgba(0,0,0,0.08);
+  transform: translateY(-2px);
+}
+
+/* Progress bar */
+.progress-track {
+  height: 4px;
+  background: #F1F6EA;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(to right, #FF9933 0%, #FFFFFF 48%, #138808 100%);
+  border-radius: 2px;
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Stat number */
+.stat-number {
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  font-weight: 800;
+  color: #FF9933;
+  line-height: 1;
+}
+
+/* Section heading */
+.section-heading {
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-weight: 700;
+  color: #1E3A8A;
+  line-height: 1.2;
+}
+
+/* Geometric border motif */
+.rangoli-border {
+  background-image: repeating-linear-gradient(
+    90deg,
+    #FF9933 0px,
+    #FF9933 8px,
+    transparent 8px,
+    transparent 16px,
+    #138808 16px,
+    #138808 24px,
+    transparent 24px,
+    transparent 32px
+  );
+  height: 2px;
+}
+
+/* Nav link */
+.nav-link {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #44403C;
+  transition: color 0.15s;
+  text-decoration: none;
+}
+
+.nav-link:hover {
+  color: #FF9933;
+}
+
+.nav-link.active {
+  color: #FF9933;
+}
