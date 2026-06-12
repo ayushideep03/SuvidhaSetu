@@ -61,9 +61,9 @@ export function SchemeCard({ scheme, showScore = true }: SchemeCardProps) {
       </p>
 
       {/* Eligibility Explanation */}
-      {(scheme.matched?.length > 0 || scheme.gaps?.length > 0) && (
+      {((scheme.matched?.length ?? 0) > 0 || (scheme.gaps?.length ?? 0) > 0) && (
         <div className="bg-neutral-50 border border-neutral-200 rounded-xl p-4 mt-2">
-          {scheme.matched?.length > 0 && (
+          {(scheme.matched?.length ?? 0) > 0 && (
             <div className="mb-3 last:mb-0">
               <p className="text-xs font-bold text-neutral-800 mb-1.5 uppercase tracking-wide">You qualify because:</p>
               <ul className="space-y-1">
@@ -77,7 +77,7 @@ export function SchemeCard({ scheme, showScore = true }: SchemeCardProps) {
             </div>
           )}
 
-          {scheme.gaps?.length > 0 && (
+          {(scheme.gaps?.length ?? 0) > 0 && (
             <div>
               <p className="text-xs font-bold text-neutral-800 mb-1.5 uppercase tracking-wide">Missing:</p>
               <ul className="space-y-1">
