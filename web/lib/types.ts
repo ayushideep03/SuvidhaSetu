@@ -37,6 +37,8 @@ export interface SchemeCard {
   brief_description: string;
   tags: string[];
   category: string;
+  matched?: string[];
+  gaps?: string[];
 }
 
 export interface SchemeDetail {

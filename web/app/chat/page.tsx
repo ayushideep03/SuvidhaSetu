@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Loader2, RotateCcw, Bot, User, FileText, Send, Download, MessageSquareShare } from "lucide-react";
+import { ArrowLeft, Loader2, RotateCcw, Bot, User, FileText, Send, Download, MessageSquareShare, Sparkles } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useQuestionnaireStore } from "@/lib/store";
 import { QUESTIONS, getNextQuestion } from "@/lib/questions";
@@ -17,6 +17,10 @@ type Message = {
   questionId?: string;
   options?: any[];
   isFinal?: boolean;
+  inputType?: string;
+  inputMin?: number;
+  inputMax?: number;
+  inputUnit?: string;
 };
 
 export default function ChatPage() {
@@ -84,6 +88,10 @@ export default function ChatPage() {
         hindiText: q.hindiPrompt,
         questionId: qId,
         options: q.options,
+        inputType: q.type,
+        inputMin: (q as any).min,
+        inputMax: (q as any).max,
+        inputUnit: (q as any).unit,
       },
     ]);
   }
@@ -240,6 +248,49 @@ export default function ChatPage() {
                         </button>
                       ))}
                     </div>
+                  )}
+
+                  {/* Input form for number/text questions */}
+                  {msg.role === "ai" && 
+                   msg === messages[messages.length - 1] && 
+                   (msg.inputType === "number_input" || msg.inputType === "text_input") && (
+                    <form
+                      onSubmit={(e) => {
+                        e.preventDefault();
+                        const val = e.currentTarget.answer.value;
+                        if (!val) return;
+                        if (msg.inputType === "number_input") {
+                          const num = Number(val);
+                          if (msg.inputMin !== undefined && num < msg.inputMin) {
+                            alert(`Value must be at least ${msg.inputMin}`);
+                            return;
+                          }
+                          if (msg.inputMax !== undefined && num > msg.inputMax) {
+                            alert(`Value must be at most ${msg.inputMax}`);
+                            return;
+                          }
+                        }
+                        handleOptionSelect(msg.questionId!, val, val);
+                      }}
+                      className="mt-2 flex items-center gap-2"
+                    >
+                      <input
+                        type={msg.inputType === "number_input" ? "number" : "text"}
+                        name="answer"
+                        required
+                        min={msg.inputMin}
+                        max={msg.inputMax}
+                        inputMode={msg.inputType === "number_input" ? "numeric" : "text"}
+                        placeholder={msg.inputType === "number_input" ? `Enter ${msg.inputUnit || 'number'}...` : "Type here..."}
+                        className="flex-1 border border-neutral-300 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-india-green"
+                      />
+                      <button
+                        type="submit"
+                        className="bg-india-green hover:bg-india-green-dark text-white p-2.5 rounded-xl transition-colors shadow-sm active:scale-95 flex shrink-0"
+                      >
+                        <Send size={18} />
+                      </button>
+                    </form>
                   )}
 
                   {/* Final Summary Card */}

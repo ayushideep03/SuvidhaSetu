@@ -30,8 +30,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
+        suppressHydrationWarning
         className="flex flex-col min-h-screen antialiased"
         style={{ fontFamily: "var(--font-sans)" }}
       >

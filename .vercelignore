@@ -1,0 +1,9 @@
+web/
+node_modules/
+.next/
+__pycache__/
+*.csv
+.vscode/
+.claude/
+.gemini/
+pyproject.toml

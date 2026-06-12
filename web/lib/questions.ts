@@ -445,6 +445,7 @@ export const QUESTIONS: Record<string, Question> = {
       { value: "award", label: "Award / Recognition / Grant", emoji: "🏆" },
       { value: "equipment", label: "Equipment / Tools / Agricultural inputs", emoji: "🔧" },
       { value: "subsidy", label: "Subsidy on purchases or services", emoji: "🏷️" },
+      { value: "any", label: "Skip / Any", emoji: "⏭️", hindiLabel: "छोड़ें / कोई भी" },
     ],
     nextFn: () => null, // terminal
   },

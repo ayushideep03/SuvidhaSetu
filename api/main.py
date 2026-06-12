@@ -24,10 +24,21 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-DB_PATH = Path("cache/schemes.db")
+import shutil
+import os
+
+DB_PATH = Path(__file__).parent.parent / "cache" / "schemes.db"
 
 def get_all_data():
-    conn = sqlite3.connect(DB_PATH)
+    # Vercel is read-only except for /tmp
+    if os.environ.get("VERCEL"):
+        tmp_db_path = Path("/tmp/schemes.db")
+        if not tmp_db_path.exists():
+            shutil.copy2(DB_PATH, tmp_db_path)
+        conn = sqlite3.connect(tmp_db_path)
+    else:
+        conn = sqlite3.connect(DB_PATH)
+        
     try:
         conn.row_factory = sqlite3.Row
         data = load_all_data(conn)
@@ -64,6 +75,19 @@ def chat(request: ChatRequest):
         return {"result": result}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+import os
+@app.get("/api/debug")
+def debug():
+    try:
+        base = Path(__file__).parent.parent
+        files = []
+        for root, dirs, filenames in os.walk(base):
+            for filename in filenames:
+                files.append(os.path.join(root, filename))
+        return {"files": files, "cwd": os.getcwd(), "base": str(base)}
+    except Exception as e:
+        return {"error": str(e)}
 
 @app.post("/schemes/rank")
 def rank(profile: Dict[str, Any]):

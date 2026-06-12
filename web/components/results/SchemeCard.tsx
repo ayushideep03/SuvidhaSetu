@@ -60,18 +60,36 @@ export function SchemeCard({ scheme, showScore = true }: SchemeCardProps) {
         {cleanText(scheme.brief_description)}
       </p>
 
-      {/* Why this scheme? */}
-      {scheme.matched && scheme.matched.length > 0 && (
-        <div className="bg-green-50/50 border border-green-100 rounded-xl p-3 mt-1">
-          <p className="text-xs font-semibold text-green-800 mb-1.5 uppercase tracking-wide">Why this was recommended:</p>
-          <ul className="space-y-1">
-            {scheme.matched.slice(0, 3).map((reason: string, i: number) => (
-              <li key={i} className="text-xs text-green-700 flex items-start gap-1.5">
-                <span className="mt-0.5">•</span>
-                <span>{reason}</span>
-              </li>
-            ))}
-          </ul>
+      {/* Eligibility Explanation */}
+      {(scheme.matched?.length > 0 || scheme.gaps?.length > 0) && (
+        <div className="bg-neutral-50 border border-neutral-200 rounded-xl p-4 mt-2">
+          {scheme.matched?.length > 0 && (
+            <div className="mb-3 last:mb-0">
+              <p className="text-xs font-bold text-neutral-800 mb-1.5 uppercase tracking-wide">You qualify because:</p>
+              <ul className="space-y-1">
+                {scheme.matched.map((reason: string, i: number) => (
+                  <li key={`matched-${i}`} className="text-sm text-neutral-700 flex items-start gap-2">
+                    <span className="text-india-green font-bold shrink-0">✓</span>
+                    <span>{reason}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {scheme.gaps?.length > 0 && (
+            <div>
+              <p className="text-xs font-bold text-neutral-800 mb-1.5 uppercase tracking-wide">Missing:</p>
+              <ul className="space-y-1">
+                {scheme.gaps.map((reason: string, i: number) => (
+                  <li key={`gap-${i}`} className="text-sm text-neutral-700 flex items-start gap-2">
+                    <span className="text-red-500 font-bold shrink-0">✗</span>
+                    <span>{reason}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
         </div>
       )}
 

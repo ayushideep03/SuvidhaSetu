@@ -123,25 +123,53 @@ export default async function SchemePage({ params }: Props) {
       )}
 
       {/* Documents */}
-      <DocumentChecklist schemeName={scheme.scheme_name} documentsMd={scheme.documents_required_md} />
+      <DocumentChecklist schemeName={scheme.scheme_name} documentsMd={scheme.documents_required_md || undefined} />
 
       {/* Application process */}
-      {scheme.application_process && scheme.application_process.length > 0 && (
-        <Section title="How to Apply" hindiTitle="आवेदन कैसे करें" icon={CheckCircle2}>
-          <ol className="space-y-3">
-            {scheme.application_process.map((step, i) => (
-              <li key={i} className="flex items-start gap-3">
-                <span className="w-6 h-6 rounded-full bg-saffron-light text-saffron-dark text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">
-                  {i + 1}
-                </span>
-                <p className="text-sm text-neutral-700 leading-relaxed">
-                  {typeof step === "string" ? step : (step as { description?: string }).description ?? JSON.stringify(step)}
+      <Section title="How to Apply" hindiTitle="आवेदन कैसे करें" icon={CheckCircle2}>
+        {(!scheme.application_process || scheme.application_process.length === 0) ? (
+          <p className="text-sm text-neutral-600">
+            Application guidance is currently unavailable.
+          </p>
+        ) : (
+          <div className="space-y-5">
+            <div className="flex flex-wrap items-center gap-x-6 gap-y-3 bg-neutral-50 px-4 py-3 rounded-xl border border-neutral-100">
+              <div>
+                <p className="text-xs text-neutral-500 font-semibold uppercase tracking-wide mb-0.5">Mode</p>
+                <p className="text-sm font-bold text-neutral-800">
+                  {scheme.official_url ? "Online / Hybrid" : "Offline"}
                 </p>
-              </li>
-            ))}
-          </ol>
-        </Section>
-      )}
+              </div>
+              {scheme.official_url && (
+                <div>
+                  <p className="text-xs text-neutral-500 font-semibold uppercase tracking-wide mb-0.5">Official Link</p>
+                  <a 
+                    href={scheme.official_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm font-bold text-saffron hover:underline flex items-center gap-1"
+                  >
+                    Apply Portal <ExternalLink size={12} />
+                  </a>
+                </div>
+              )}
+            </div>
+
+            <ol className="space-y-3">
+              {scheme.application_process.map((step, i) => (
+                <li key={i} className="flex items-start gap-3">
+                  <span className="w-6 h-6 rounded-full bg-saffron-light text-saffron-dark text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">
+                    {i + 1}
+                  </span>
+                  <p className="text-sm text-neutral-700 leading-relaxed">
+                    {typeof step === "string" ? step : (step as { description?: string }).description ?? JSON.stringify(step)}
+                  </p>
+                </li>
+              ))}
+            </ol>
+          </div>
+        )}
+      </Section>
 
       {/* Exclusions */}
       {scheme.exclusions_md && (

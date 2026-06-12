@@ -20,3 +20,4 @@ refetch_missing.py
 
 # Claude session data
 .claude/
+.vercel

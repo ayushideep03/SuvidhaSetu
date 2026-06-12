@@ -1,8 +1,12 @@
 {
+  "name": "suvidhasetu-backend",
   "builds": [
     {
       "src": "api/main.py",
-      "use": "@vercel/python"
+      "use": "@vercel/python",
+      "config": {
+        "includeFiles": "cache/schemes.db"
+      }
     }
   ],
   "routes": [

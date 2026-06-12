@@ -18,23 +18,23 @@ export function scoreLabel(score: number): {
   className: string;
   icon: string;
 } {
-  if (score >= 55)
-    return {
-      label: "Eligible",
-      hindiLabel: "पात्र",
-      className: "badge-eligible",
-      icon: "✅",
-    };
-  if (score >= 25)
+  if (score >= 90)
     return {
       label: "Likely Eligible",
       hindiLabel: "संभवतः पात्र",
+      className: "badge-eligible",
+      icon: "✅",
+    };
+  if (score >= 60)
+    return {
+      label: "Possibly Eligible",
+      hindiLabel: "शायद पात्र",
       className: "badge-likely",
       icon: "⚠️",
     };
   return {
-    label: "Not Excluded — Verify",
-    hindiLabel: "बाहर नहीं किया गया — जाँचें",
+    label: "Additional Verification Needed",
+    hindiLabel: "अतिरिक्त जाँच आवश्यक",
     className: "badge-possible",
     icon: "ℹ️",
   };
