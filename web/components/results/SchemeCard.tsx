@@ -67,7 +67,7 @@ export function SchemeCard({ scheme, showScore = true }: SchemeCardProps) {
             <div className="mb-3 last:mb-0">
               <p className="text-xs font-bold text-neutral-800 mb-1.5 uppercase tracking-wide">You qualify because:</p>
               <ul className="space-y-1">
-                {scheme.matched.map((reason: string, i: number) => (
+                {scheme.matched?.map((reason: string, i: number) => (
                   <li key={`matched-${i}`} className="text-sm text-neutral-700 flex items-start gap-2">
                     <span className="text-india-green font-bold shrink-0">✓</span>
                     <span>{reason}</span>
@@ -81,7 +81,7 @@ export function SchemeCard({ scheme, showScore = true }: SchemeCardProps) {
             <div>
               <p className="text-xs font-bold text-neutral-800 mb-1.5 uppercase tracking-wide">Missing:</p>
               <ul className="space-y-1">
-                {scheme.gaps.map((reason: string, i: number) => (
+                {scheme.gaps?.map((reason: string, i: number) => (
                   <li key={`gap-${i}`} className="text-sm text-neutral-700 flex items-start gap-2">
                     <span className="text-red-500 font-bold shrink-0">✗</span>
                     <span>{reason}</span>
