@@ -15,15 +15,14 @@ function getApiBase(): string {
     return process.env.BACKEND_API_URL.replace(/\/$/, "");
   }
 
-  if (typeof window !== "undefined") {
-    return "/api/backend";
+  // Bypassing self-rewrites for SSR on Vercel since it can be flaky.
+  // We point directly to the known backend.
+  if (typeof window === "undefined") {
+    return "https://suvidhasetu-backend.vercel.app";
   }
 
-  const siteUrl =
-    process.env.NEXT_PUBLIC_SITE_URL ||
-    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
-
-  return `${siteUrl.replace(/\/$/, "")}/api/backend`;
+  // Client-side can safely use the rewrite proxy
+  return "/api/backend";
 }
 
 async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
