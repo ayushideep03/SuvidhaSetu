@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ArrowRight, CheckCircle2, Code2, ShieldCheck } from "lucide-react";
 
-const GITHUB_URL = "https://github.com/Ayushideep/SuvidhaSetu";
+const GITHUB_URL = "https://github.com/ayushideep03/SuvidhaSetu/";
 
 const CONTRIBUTION_AREAS = [
   "Improve accessibility, layout, and mobile polish.",

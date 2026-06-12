@@ -1,7 +1,7 @@
 import Link from "next/link";
-import { Code2, Heart } from "lucide-react";
+import { Code2 } from "lucide-react";
 
-const GITHUB_URL = "https://github.com/Ayushideep/SuvidhaSetu";
+const GITHUB_URL = "https://github.com/ayushideep03/SuvidhaSetu/";
 
 export function Footer() {
   return (
@@ -14,10 +14,12 @@ export function Footer() {
           <div className="text-center md:text-left flex-1">
             <p className="text-sm font-bold text-saffron inline-flex items-center gap-2">
               Suvidha Setu
-              <span className="text-neutral-500 font-normal" style={{ fontFamily: "var(--font-devanagari), serif" }}>सुविधा सेतु</span>
+              <span className="text-neutral-500 font-normal" style={{ fontFamily: "var(--font-devanagari), serif" }}>| सुविधा सेतु</span>
             </p>
             <p className="text-neutral-500 mt-1 max-w-sm mx-auto md:mx-0">
-              Intelligently matching citizens with India&apos;s government schemes. Not affiliated with myscheme.gov.in.
+              Helping citizens discover relevant government welfare schemes with clarity and confidence.<br/>
+              Independent public interest initiative.<br/>
+              Not affiliated with MyScheme.gov.in or any Government authority.
             </p>
           </div>
 
@@ -25,8 +27,8 @@ export function Footer() {
           <div className="flex-1 flex justify-center md:justify-end">
             <ul className="flex flex-wrap justify-center md:justify-end gap-x-4 gap-y-2 max-w-lg">
               {[
-                { href: "/find", label: "Find Scheme" },
-                { href: "/browse", label: "Browse" },
+                { href: "/find", label: "Find Schemes" },
+                { href: "/browse", label: "Browse Schemes" },
                 { href: "/insights", label: "Insights" },
                 { href: "/insights/how-it-works", label: "How It Works" },
                 { href: "/contribute", label: "Contribute" },
@@ -38,7 +40,7 @@ export function Footer() {
                 </li>
               ))}
               <li>
-                <a href={GITHUB_URL} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-neutral-400 hover:text-saffron transition-colors">
+                <a href={GITHUB_URL} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-neutral-400 hover:text-saffron transition-colors">
                   <Code2 size={12} /> GitHub
                 </a>
               </li>
@@ -49,16 +51,15 @@ export function Footer() {
         {/* Bottom Bar */}
         <div className="border-t border-neutral-800 mt-4 pt-4 flex flex-col sm:flex-row items-center justify-between gap-2">
           <div className="text-neutral-500 flex gap-3 text-[10px]">
-            <span>4,669 schemes</span>
-            <span>37 states &amp; UTs</span>
+            <span>4,669+ Schemes</span>
+            <span>37 States &amp; UTs</span>
             <span>Updated June 2026</span>
           </div>
           
           <div className="flex items-center gap-2">
             <p className="inline-flex items-center gap-1 text-[11px] text-neutral-400">
-              Built with <Heart size={10} className="fill-saffron text-saffron" /> by <strong className="text-white">Ayushideep</strong>
+              Built by <strong className="text-white">Team Saarthi</strong>
             </p>
-            <p className="text-neutral-500 text-[10px]" style={{ fontFamily: "var(--font-devanagari), serif" }}>जय हिन्द</p>
           </div>
         </div>
       </div>
