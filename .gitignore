@@ -17,7 +17,6 @@ download_gov_myscheme.py
 refetch_missing.py
 
 # Data (private — scraped database and CSV)
-cache/
 
 # Claude session data
 .claude/
